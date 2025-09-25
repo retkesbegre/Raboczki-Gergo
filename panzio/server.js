@@ -2,9 +2,9 @@ const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
   host: 'localhost',
-  port: 3307, // ha ezen fut a MySQL szervered
-  user: 'root', // vagy amit beállítottál
-  password: 'jelszavad', // cseréld ki a sajátodra
+  port: 3307, 
+  user: 'root', 
+  password: '', 
   database: 'fogado'
 });
 
