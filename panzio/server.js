@@ -13,7 +13,7 @@ connection.connect((err) => {
     console.error('Nem sikerült csatlakozni az adatbázishoz:', err);
     return;
   }
-  console.log('Sikeres kapcsolat a panzio adatbázissal!');
+  console.log('Sikeres kapcsolat a fogado adatbázissal!');
 });
 
 const express = require('express');
