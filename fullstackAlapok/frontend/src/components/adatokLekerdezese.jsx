@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 const adatokLekerdezese = async () => {
         setLoading(true);
         try {

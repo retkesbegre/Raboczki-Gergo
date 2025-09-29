@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css'; 
+import adatokLekerdezese from './components/adatokLekerdezese';
+import torolFelhasznalo from './components/torolFelhasznalo';
+import ujFelhasznalo from './components/ujFelhasznalo';
 
 function App() {
-    // --- STATE VÁLTOZÓK ---
-
+    //importok meghívása
+    
     // READ ÉS HIBAKEZELÉS
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,15 +22,16 @@ function App() {
     const [editedName, setEditedName] = useState('');
     const [editedEmail, setEditedEmail] = useState('');
 
-    // --- FUNKCIÓK ---
-
-    
-    
-
-    // Adatok lekérése a komponens betöltésekor
+     // Adatok lekérése a komponens betöltésekor
     useEffect(() => {
-        fetchData(); 
+      adatokLekerdezese({ setUsers, setLoading, setError });
     }, []);
+
+    
+    
+
+   
+    
 
     
     
