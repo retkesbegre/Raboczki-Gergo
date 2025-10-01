@@ -1,59 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './App.css'; 
+import './App.css';
+import './Navbar.css';
 import adatokLekerdezese from './components/adatokLekerdezese';
 import torolFelhasznalo from './components/torolFelhasznalo';
 import ujFelhasznalo from './components/ujFelhasznalo';
 
 function App() {
-    //importok meghívása
-    
-    // READ ÉS HIBAKEZELÉS
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
-    // CREATE (HOZZÁADÁS)
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-
-    // UPDATE (SZERKESZTÉS)
-    const [editingId, setEditingId] = useState(null); 
+    const [editingId, setEditingId] = useState(null);
     const [editedName, setEditedName] = useState('');
     const [editedEmail, setEditedEmail] = useState('');
 
-     // Adatok lekérése a komponens betöltésekor
-    useEffect(() => {
-      adatokLekerdezese({ setUsers, setLoading, setError });
-    }, []);
-
-    useEffect(() => {
-        torolFelhasznalo({ setUsers, setLoading, setError });
-      }, []);
-
-    useEffect(() => {
-    ujFelhasznalo({ setUsers, setLoading, setError });
-    }, []);
-
-    
-
-   
-    
-
-    
-    
-
-    
-    
-    
-    // UPDATE: Szerkesztési mód elindítása
-    const handleEditStart = (user) => {
-        setEditingId(user.id);
-        setEditedName(user.name);
-        setEditedEmail(user.email);
+    const handleDelete = async (id) => {
+        await torolFelhasznalo({ id, setUsers, setLoading, setError });
     };
 
-    // UPDATE: Módosítás elküldése
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!name || !email) {
+            alert("A név és az email mező kitöltése kötelező!");
+            return;
+        }
+        await ujFelhasznalo({ name, email, setUsers, setLoading, setError });
+        setName('');
+        setEmail('');
+    };
+
     const handleUpdate = async (id) => {
         if (!editedName || !editedEmail) {
             alert("A név és az email mező kitöltése kötelező!");
@@ -66,114 +43,92 @@ function App() {
                 email: editedEmail,
             });
             setEditingId(null);
-            fetchData();
+            adatokLekerdezese({ setUsers, setLoading, setError });
         } catch (err) {
             console.error("Hiba a módosításkor:", err);
             setError("Nem sikerült módosítani a felhasználót.");
         }
     };
-    
-    // Szerkesztés megszakítása
+
     const handleEditCancel = () => {
         setEditingId(null);
     };
 
+    
+    
 
-    // --- RENDERELÉS ---
+    if (loading) return <div className="App"><p>Adatok betöltése...</p></div>;
+    if (error) return <div className="App"><p style={{ color: 'red' }}>{error}</p></div>;
 
-    // Feltételes renderelés: Betöltés és Hiba
-    if (loading) {
-        return <div className="App"><p>Adatok betöltése...</p></div>;
-    }
-    if (error) {
-        return <div className="App"><p style={{ color: 'red' }}>{error}</p></div>;
-    }
-
-    // JSX Visszatérés
     return (
         <div className="App">
+            <nav className="navbar">
+                <div className="navbar-logo">CRUD App</div>
+                <ul className="navbar-links">
+                    <li><a href="#add">Hozzáadás</a></li>
+                    <li><a href="#list">Lista</a></li>
+                </ul>
+            </nav>
+
             <h1>Felhasználókezelő (Full-Stack CRUD)</h1>
-            
-            {/* Új felhasználó hozzáadása űrlap */}
-            <form onSubmit={handleSubmit} style={{marginBottom: '30px', border: '1px solid #ccc', padding: '15px'}}>
+
+            <form id="add" onSubmit={handleSubmit} className="form-container">
                 <h2>Új felhasználó hozzáadása</h2>
                 <input
                     type="text"
                     placeholder="Név"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    style={{marginRight: '10px', padding: '5px'}}
                 />
                 <input
                     type="email"
                     placeholder="Email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    style={{marginRight: '10px', padding: '5px'}}
                 />
-                <button type="submit" style={{padding: '5px 10px'}}>Hozzádás</button>
+                <button type="submit">Hozzádás</button>
             </form>
-            
+
             <hr />
-            
-            <h2>Felhasználók Listája</h2>
-            <table style={{width: '100%', borderCollapse: 'collapse'}}>
+
+            <h2 id="list">Felhasználók Listája</h2>
+            <table className="user-table">
                 <thead>
                     <tr>
-                        <th style={tableHeaderStyle}>#ID</th>
-                        <th style={tableHeaderStyle}>Név</th>
-                        <th style={tableHeaderStyle}>Email</th>
-                        <th style={tableHeaderStyle}>Regisztráció</th>
-                        <th style={tableHeaderStyle}>Műveletek</th> 
+                        <th>#ID</th>
+                        <th>Név</th>
+                        <th>Email</th>
+                        <th>Regisztráció</th>
+                        <th>Műveletek</th>
                     </tr>
                 </thead>
                 <tbody>
                     {users.length > 0 ? (
                         users.map(user => (
                             <tr key={user.id}>
-                                <td style={tableCellStyle}>{user.id}</td>
-                                
-                                {/* Szerkesztési mód váltása */}
+                                <td>{user.id}</td>
                                 {editingId === user.id ? (
                                     <>
-                                        <td style={tableCellStyle}>
-                                            <input 
-                                                type="text" 
-                                                value={editedName} 
-                                                onChange={e => setEditedName(e.target.value)} 
-                                            />
-                                        </td>
-                                        <td style={tableCellStyle}>
-                                            <input 
-                                                type="email" 
-                                                value={editedEmail} 
-                                                onChange={e => setEditedEmail(e.target.value)} 
-                                            />
-                                        </td>
+                                        <td><input type="text" value={editedName} onChange={e => setEditedName(e.target.value)} /></td>
+                                        <td><input type="email" value={editedEmail} onChange={e => setEditedEmail(e.target.value)} /></td>
                                     </>
                                 ) : (
-                                    // Normál mód
                                     <>
-                                        <td style={tableCellStyle}>{user.name}</td>
-                                        <td style={tableCellStyle}>{user.email}</td>
+                                        <td>{user.name}</td>
+                                        <td>{user.email}</td>
                                     </>
                                 )}
-                                
-                                <td style={tableCellStyle}>{new Date(user.created_at).toLocaleDateString()}</td>
-
-                                {/* MŰVELETI GOMBOK */}
-                                <td style={tableCellStyle}>
+                                <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                                <td>
                                     {editingId === user.id ? (
-                                        // Szerkesztési mód gombjai
                                         <>
-                                            <button onClick={() => handleUpdate(user.id)} style={saveButtonStyle}>Mentés</button>
-                                            <button onClick={handleEditCancel} style={cancelButtonStyle}>Mégse</button>
+                                            <button className="btn save" onClick={() => handleUpdate(user.id)}>Mentés</button>
+                                            <button className="btn cancel" onClick={handleEditCancel}>Mégse</button>
                                         </>
                                     ) : (
-                                        // Normál mód gombjai
                                         <>
-                                            <button onClick={() => handleEditStart(user)} style={editButtonStyle}>Szerkesztés</button>
-                                            <button onClick={() => handleDelete(user.id)} style={deleteButtonStyle}>Törlés</button>
+                                            <button className="btn edit" onClick={() => handleEditStart(user)}>Szerkesztés</button>
+                                            <button className="btn delete" onClick={() => handleDelete(user.id)}>Törlés</button>
                                         </>
                                     )}
                                 </td>
@@ -181,22 +136,13 @@ function App() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="5" style={noUsersCellStyle}>Nincsenek felhasználók az adatbázisban.</td>
+                            <td colSpan="5" className="no-users">Nincsenek felhasználók az adatbázisban.</td>
                         </tr>
                     )}
                 </tbody>
             </table>
         </div>
     );
-} 
-
-// Stílusdefiníciók
-const tableHeaderStyle = { border: '1px solid #ccc', padding: '10px', backgroundColor: '#f0f0f0' };
-const tableCellStyle = { border: '1px solid #ccc', padding: '10px', textAlign: 'left' };
-const noUsersCellStyle = { border: '1px solid #ccc', padding: '10px', textAlign: 'center' };
-const saveButtonStyle = { padding: '5px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer', marginRight: '5px' };
-const cancelButtonStyle = { padding: '5px', backgroundColor: '#9E9E9E', color: 'white', border: 'none', cursor: 'pointer' };
-const editButtonStyle = { padding: '5px', backgroundColor: '#2196F3', color: 'white', border: 'none', cursor: 'pointer', marginRight: '5px' };
-const deleteButtonStyle = { padding: '5px', backgroundColor: '#F44336', color: 'white', border: 'none', cursor: 'pointer' };
+}
 
 export default App;

@@ -1,20 +1,19 @@
-import axios from 'axios'
+// fájlnév: ujFelhasznalo.js
+import axios from 'axios';
 
-const ujFelhasznalo = async (event) => {
-        event.preventDefault();
-        if (!name || !email) {
-            alert("A név és az email megadása kötelező!");
-            return;
-        }
-        try {
-            await axios.post('http://localhost:3001/api/users', { name, email });
-            fetchData(); // Frissítés
-            setName('');
-            setEmail('');
-        } catch (err) {
-            console.error('Hiba az adatok küldésekor:', err);
-            setError("Hiba történt a felhasználó hozzáadása közben.");
-        }
+const ujFelhasznalo = async ({ name, email, setUsers, setLoading, setError }) => {
+    setLoading(true);
+    try {
+        await axios.post('http://localhost:3001/api/users', { name, email });
+        const response = await axios.get('http://localhost:3001/api/users');
+        setUsers(response.data);
+        setError(null);
+    } catch (err) {
+        console.error("Hiba a hozzáadáskor:", err);
+        setError("Nem sikerült hozzáadni a felhasználót.");
+    } finally {
+        setLoading(false);
+    }
 };
 
-export default ujFelhasznalo
+export default ujFelhasznalo;
