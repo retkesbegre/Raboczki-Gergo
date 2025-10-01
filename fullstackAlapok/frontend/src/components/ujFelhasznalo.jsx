@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 const ujFelhasznalo = async (event) => {
         event.preventDefault();
         if (!name || !email) {

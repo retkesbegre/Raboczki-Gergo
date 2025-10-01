@@ -27,7 +27,14 @@ function App() {
       adatokLekerdezese({ setUsers, setLoading, setError });
     }, []);
 
-    
+    useEffect(() => {
+        torolFelhasznalo({ setUsers, setLoading, setError });
+      }, []);
+
+    useEffect(() => {
+    ujFelhasznalo({ setUsers, setLoading, setError });
+    }, []);
+
     
 
    

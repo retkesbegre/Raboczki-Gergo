@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 const torolFelhasznalo = async (id) => {
     if (!window.confirm(`Biztosan törölni szeretnéd a(z) ${id} ID-jű felhasználót?`)) {
         return;
